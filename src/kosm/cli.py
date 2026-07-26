@@ -54,6 +54,15 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         ),
     )
     parser.add_argument(
+        "--geojson-output",
+        default=None,
+        help=(
+            "Also write the same features to this GeoJSON path (EPSG:4326). "
+            "Useful for web viewers, since browsers can't read GeoPackage/"
+            "SQLite directly."
+        ),
+    )
+    parser.add_argument(
         "--endpoint",
         action="append",
         dest="endpoints",
@@ -122,6 +131,11 @@ def main(argv: list[str] | None = None) -> int:
 
     gdf.to_file(args.output, layer=args.layer, driver="GPKG")
     logger.info("Wrote %d features to %s (layer %r)", len(gdf), args.output, args.layer)
+
+    if args.geojson_output:
+        gdf.to_file(args.geojson_output, driver="GeoJSON")
+        logger.info("Wrote %d features to %s", len(gdf), args.geojson_output)
+
     return 0
 
 
