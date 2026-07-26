@@ -92,13 +92,16 @@ kosm-arctic-military \
 ### Reliability notes
 
 Public Overpass instances are free, shared, and rate-limit concurrent
-queries per client IP. A full circumpolar query is large (tens of thousands
-of elements) and can take 1-3 minutes, and may receive a `429` if the
-server is busy. `kosm` retries each configured endpoint a few times with
-backoff (honoring a `Retry-After` header when present) before moving to the
-next one; the default endpoint list includes multiple community mirrors.
-If every endpoint fails, rerun later or point `--endpoint` at an Overpass
-instance you control.
+queries per client IP. A full circumpolar query returns a few thousand
+elements and can take anywhere from a few seconds to a few minutes
+depending on server load, and may receive a `429` if a given instance is
+already busy with other clients (this is common on shared/proxied networks
+where many unrelated clients share one egress IP). `kosm` retries each
+configured endpoint a few times with backoff (honoring a `Retry-After`
+header when present) before moving to the next one; the default endpoint
+list includes several independent public mirrors so a busy one doesn't
+block the whole run. If every endpoint fails, rerun later or point
+`--endpoint` at an Overpass instance you control.
 
 ## Output schema
 
@@ -112,6 +115,36 @@ element: `Point` for nodes, `LineString`/`Polygon` for ways, and
 | `osm_url` | Link to the element on openstreetmap.org |
 | `military`, `landuse`, `name`, `name:en`, `operator`, `operator:type`, `operator:wikidata`, `access`, `building`, `historic`, `description`, `start_date`, `disused`, `abandoned`, `wikidata`, `wikipedia` | Common OSM tags, flattened into their own columns for easy filtering (null if absent) |
 | `tags_json` | The complete raw OSM tag set for the element, as JSON — nothing is lost even if a tag isn't one of the flattened columns above |
+
+## Viewing the data
+
+`viewer/index.html` is a small static [OpenLayers](https://openlayers.org)
+page for browsing the extracted features without opening a GIS application.
+It loads `viewer/data/arctic_military.geojson` (browsers can't read
+GeoPackage/SQLite directly), plots it over an OSM basemap, color-codes
+features by category (bases/barracks, airfields, bunkers/trenches, danger
+areas/ranges, checkpoints, other), and shows a popup with each feature's
+tags on click. The legend doubles as a category filter.
+
+Generate the GeoJSON alongside the GeoPackage, then serve the `viewer/`
+directory (needed because browsers block `fetch()` of local files over
+`file://`):
+
+```bash
+kosm-arctic-military \
+  --output arctic_military.gpkg \
+  --geojson-output viewer/data/arctic_military.geojson
+
+cd viewer && python3 -m http.server 8000
+# open http://localhost:8000/
+```
+
+OpenLayers itself and the OSM basemap tiles load from public CDNs, so this
+requires normal internet access in the browser (not proxied/sandboxed).
+
+`arctic_military.gpkg` and `viewer/data/arctic_military.geojson` in this
+repo are a point-in-time snapshot (3,107 features, pulled 2026-07-26) so the
+viewer works out of the box; rerun the CLI to refresh either file.
 
 ## Data source & license
 

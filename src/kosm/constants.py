@@ -10,14 +10,20 @@ ARCTIC_CIRCLE_LATITUDE = 66.5
 # Circle: (south, west, north, east) as used by Overpass QL.
 ARCTIC_BBOX = (ARCTIC_CIRCLE_LATITUDE, -180.0, 90.0, 180.0)
 
-# Public Overpass API endpoints, tried in order. overpass-api.de (the
-# "main" instance) is listed first since it is the canonical instance, with
-# community mirrors as fallbacks for resilience against rate limiting or
-# downtime.
+# Public Overpass API endpoints, tried in order. These are independent
+# deployments (different backing infrastructure/client-id pools), so a
+# 429 (too many concurrent queries) on one doesn't necessarily mean the
+# next is also saturated. Note: some networks' HTTP proxies return a
+# spurious 406 for every `overpass-api.de` subdomain (including the
+# canonical load-balanced `z.overpass-api.de`); it is listed last so those
+# networks fall through to a mirror that works, while networks without
+# that quirk still reach the main instance as a final fallback.
 DEFAULT_OVERPASS_ENDPOINTS = (
+    "https://maps.mail.ru/osm/tools/overpass/api/interpreter",
+    "https://overpass.osm.ch/api/interpreter",
     "https://overpass.kumi.systems/api/interpreter",
     "https://overpass.private.coffee/api/interpreter",
-    "https://overpass-api.de/api/interpreter",
+    "https://z.overpass-api.de/api/interpreter",
 )
 
 # OSM tagging scheme for military features:

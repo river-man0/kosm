@@ -267,7 +267,7 @@ map.on("singleclick", (evt) => {
 
 map.on("pointermove", (evt) => {
   const hit = map.hasFeatureAtPixel(evt.pixel);
-  map.getTarget().style.cursor = hit ? "pointer" : "";
+  map.getTargetElement().style.cursor = hit ? "pointer" : "";
 });
 </script>
 </body>
