@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "kosm"
+version = "0.1.0"
+description = "Query OpenStreetMap for military features in the Arctic Circle and export them as a GeoPackage"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "requests>=2.31",
+    "geopandas>=0.14",
+    "shapely>=2.0",
+    "pyogrio>=0.7",
+    "osm2geojson>=0.2.4",
+]
+
+[project.scripts]
+kosm-arctic-military = "kosm.cli:main"
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
