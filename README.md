@@ -6,6 +6,10 @@ feature tagged as military, keeps only the ones located inside the Arctic
 Circle, and writes the result to a [GeoPackage](https://www.geopackage.org/)
 (`.gpkg`) for use in GIS tools like QGIS, ArcGIS, or `geopandas`.
 
+**Live viewer:** https://river-man0.github.io/kosm/ (deployed via the
+`.github/workflows/pages.yml` Actions workflow, see [Viewing the
+data](#viewing-the-data) below)
+
 ## What counts as a "military feature"
 
 OSM's tagging scheme for military features is documented at
@@ -126,9 +130,15 @@ features by category (bases/barracks, airfields, bunkers/trenches, danger
 areas/ranges, checkpoints, other), and shows a popup with each feature's
 tags on click. The legend doubles as a category filter.
 
-Generate the GeoJSON alongside the GeoPackage, then serve the `viewer/`
-directory (needed because browsers block `fetch()` of local files over
-`file://`):
+**Hosted:** `.github/workflows/pages.yml` deploys `viewer/` to GitHub Pages
+on every push to this branch that touches that directory, publishing it at
+https://river-man0.github.io/kosm/. Requires Pages to be enabled for this
+repo with source "GitHub Actions" (Settings → Pages), which is already the
+case here.
+
+**Locally:** generate the GeoJSON alongside the GeoPackage, then serve the
+`viewer/` directory (needed because browsers block `fetch()` of local
+files over `file://`):
 
 ```bash
 kosm-arctic-military \
